@@ -1,5 +1,5 @@
-from src.utilitis.logger import get_logger
-from src.utilitis.config import get_config
+from src.utilities.logger import get_logger
+from src.utilities.config import get_config
 
 
 def main():

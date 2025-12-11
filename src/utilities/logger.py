@@ -2,10 +2,8 @@ import logging
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
-import pandas as pd
-import matplotlib.pyplot as plt
 
-from src.utilitis.config import get_config
+from src.utilities.config import get_config
 
 class AppLogger:
     """

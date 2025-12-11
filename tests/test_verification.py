@@ -1,4 +1,4 @@
-from verification import verify_message, calculate_similarity
+from tests.verification import verify_message, calculate_similarity
 import unittest
 import sys
 
