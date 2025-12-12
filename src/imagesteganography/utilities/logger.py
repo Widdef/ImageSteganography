@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 from datetime import datetime
 
-from src.utilities.config import get_config
+from utilities.config import get_config
 
 class AppLogger:
     """

@@ -1,4 +1,4 @@
-from src.core.ImageStegoBackend import ImageStegoBackend
+from imagesteganography.core.ImageStegoBackend import ImageStegoBackend
 
 class JpegStegoBackend(ImageStegoBackend):
     def encode(self, input_path: str, message: str, output_path: str) -> str:

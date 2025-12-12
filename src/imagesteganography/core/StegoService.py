@@ -1,7 +1,7 @@
 import os
 from typing import Optional
-from src.utilities.ImageFormat import ImageFormat
-from src.utilities.StegoBackendFactory import StegoBackendFactory
+from imagesteganography.utilities.ImageFormat import ImageFormat
+from imagesteganography.utilities.StegoBackendFactory import StegoBackendFactory
 
 
 class StegoService:

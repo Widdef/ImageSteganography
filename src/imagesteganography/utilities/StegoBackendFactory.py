@@ -1,9 +1,9 @@
-from src.core.ImageStegoBackend import ImageStegoBackend
-from src.utilities.ImageFormat import ImageFormat
-from src.formats.png_backend import PngStegoBackend
-from src.formats.bmp_backend import BmpStegoBackend
-from src.formats.tiff_backend import TiffStegoBackend
-from src.formats.jpeg_backend import JpegStegoBackend
+from imagesteganography.core.ImageStegoBackend import ImageStegoBackend
+from imagesteganography.utilities.ImageFormat import ImageFormat
+from imagesteganography.formats.png_backend import PngStegoBackend
+from imagesteganography.formats.bmp_backend import BmpStegoBackend
+from imagesteganography.formats.tiff_backend import TiffStegoBackend
+from imagesteganography.formats.jpeg_backend import JpegStegoBackend
 
 class StegoBackendFactory:
     @staticmethod

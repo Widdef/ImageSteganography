@@ -1,5 +1,5 @@
-from src.core.ImageStegoBackend import ImageStegoBackend
-from src.core.LsbMixin import LsbMixin
+from imagesteganography.core.ImageStegoBackend import ImageStegoBackend
+from imagesteganography.core.LsbMixin import LsbMixin
 
 
 class PngStegoBackend(ImageStegoBackend, LsbMixin):
