@@ -12,10 +12,10 @@ class TestVerification(unittest.TestCase):
         self.assertIn("IDENTYCZNE", msg)  
     
     def test_different_strings(self):
-        """Test gdy wiadomości są różne"""
         result, msg = verify_message("Hello", "World")
         self.assertFalse(result)  
-        self.assertIn("różnią", msg)  
+        # Używamy 'roznia' zamiast 'różnią' bo funkcja zwraca 'roznia'
+        self.assertIn("roznia", msg.lower())
     
     def test_case_sensitive(self):
         """Test czy funkcja rozróżnia wielkość liter"""

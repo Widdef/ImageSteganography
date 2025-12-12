@@ -1,6 +1,5 @@
 from PIL import Image
 from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from PIL.Image import PixelAccess # type: ignore
 
@@ -12,7 +11,7 @@ class LsbMixin:
 
     HEADER_BITS = 32  # np. 32 bity na długość wiadomości w bajtach
 
-    def _image_to_pixels(self, img: Image.Image) -> tuple[Image.Image, PixelAccess]:
+    def _image_to_pixels(self, img: Image.Image) -> tuple[Image.Image, "PixelAccess"]:
         # wymuś kopię aby load() zawsze działało 
         img = img.copy()
         
@@ -26,7 +25,7 @@ class LsbMixin:
         return img, pixels
     
 
-    def _get_rgba(self, pixels: PixelAccess, x: int, y: int) -> tuple[int, int, int, int]:
+    def _get_rgba(self, pixels: "PixelAccess", x: int, y: int) -> tuple[int, int, int, int]:
         """Zwraca zawsze (r, g, b, a) niezależnie od trybu obrazu."""
         # Zapewnia zgodność typów pod Pylance
         value = pixels[x, y]
