@@ -127,9 +127,6 @@ class LsbMixin:
         msg_bits_needed = length * 8
         msg_bits = []
 
-        # 2. Odczyt reszty wiadomości, kontynuując od kolejnego kanału
-        # Uproszczenie: przechodzimy po obrazie od początku jeszcze raz
-        # (wydajnościowo to OK dla projektu zaliczeniowego).
         idx = 0
         for y in range(h):
             for x in range(w):
