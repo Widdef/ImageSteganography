@@ -23,11 +23,18 @@ class StegoService:
         message: str,
         image_format: ImageFormat,
         output_path: Optional[str] = None,
+        anti_forensic_noise: bool = False, 
+        noise_ratio: float = 0.05
     ) -> str:
         """
         Ukrywa wiadomość i zwraca ścieżkę do nowego pliku.
         """
-        backend = self.backend_factory.create(image_format)
+        backend = self.backend_factory.create(
+            image_format, 
+            anti_forensic_noise=anti_forensic_noise, 
+            noise_ratio=noise_ratio
+        )
+
         if output_path is None:
             output_path = self._default_output_path(image_path)
         return backend.encode(image_path, message, output_path)
