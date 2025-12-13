@@ -12,7 +12,8 @@ dependencies = [
     "typer>=0.9",
     "Pillow>=10.0",
     "numpy>=1.21.0",
-    "jpegio"
+    "jpegio",
+    "tkinter"
 ]
 
 [tool.setuptools.packages.find]
