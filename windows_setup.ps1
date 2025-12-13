@@ -8,6 +8,9 @@ if (-not $PYTHON_BIN) { $PYTHON_BIN = "python" }
 $VENV_DIR = $env:VENV_DIR
 if (-not $VENV_DIR) { $VENV_DIR = "venv" }
 
+Write-Host "[*] Katalog skryptu: $PSScriptRoot"
+Set-Location $PSScriptRoot
+
 Write-Host "[*] Sprawdzam, czy dostępny jest $PYTHON_BIN..."
 
 $pythonPath = (Get-Command $PYTHON_BIN -ErrorAction SilentlyContinue)
@@ -17,7 +20,7 @@ if (-not $pythonPath) {
     Write-Host "    Upewnij się, że Python 3.x jest zainstalowany,"
     Write-Host "    albo uruchom skrypt tak:"
     Write-Host "    set PYTHON_BIN=C:\Python311\python.exe"
-    Write-Host "    .\windows_env.ps1"
+    Write-Host "    .\windows_setup.ps1"
     exit 1
 }
 
@@ -31,15 +34,17 @@ Write-Host "[*] Aktywuję virtualenv..."
 Write-Host "[*] Aktualizuję pip/setuptools/wheel..."
 python -m pip install --upgrade pip setuptools wheel
 
-if (Test-Path "requirements.txt") {
-    Write-Host "[*] Instaluję zależności z requirements.txt..."
-    pip install -r requirements.txt
+if (Test-Path "pyproject.toml") {
+    Write-Host "[*] Instaluję projekt (z pyproject.toml) w trybie developerskim..."
+    pip install -e .
 }
 else {
-    Write-Host "[!] Brak requirements.txt — pomijam instalację zależności."
+    Write-Host "[!] Nie znaleziono pyproject.toml — pomijam instalację projektu."
 }
 
 Write-Host ""
 Write-Host "[✓] Środowisko gotowe."
-Write-Host "    Aby z niego korzystać, wykonaj w PowerShell:"
-Write-Host "    source ${VENV_DIR}/bin/activate"
+Write-Host "    Aby z niego korzystać w nowej sesji PowerShell, wykonaj:"
+Write-Host "        .\$VENV_DIR\Scripts\Activate.ps1"
+Write-Host "    a potem np.:"
+Write-Host "        stego --help"

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imagesteganography"
+version = "0.1.0"
+description = "Image steganography"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typer>=0.9",
+    "Pillow>=10.0",
+    "numpy>=1.21.0",
+    "jpegio"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+stego = "imagesteganography.cli.cli:main"

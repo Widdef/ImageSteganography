@@ -214,3 +214,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# vscode
+.vscode
+assets/**/*.png
+assets/**/*.jpg
+assets/**/*.jpeg
+assets/**/*.tiff
+assets/**/*.bmp

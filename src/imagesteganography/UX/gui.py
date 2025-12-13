@@ -631,7 +631,7 @@ class Gui:
         messagebox.showinfo("Save Log", "Log would be saved to a file.\nThis is a simulation.")
         self.log("Save log clicked (simulated)")
 
-def main():
+def run_gui():
     """Główna funkcja uruchamiająca aplikację"""
     root = tk.Tk()
     
@@ -651,6 +651,3 @@ def main():
     
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
-
-if __name__ == "__main__":
-    main()
