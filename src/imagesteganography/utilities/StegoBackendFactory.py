@@ -7,13 +7,13 @@ from imagesteganography.formats.jpeg_backend import JpegStegoBackend
 
 class StegoBackendFactory:
     @staticmethod
-    def create(fmt: ImageFormat) -> ImageStegoBackend:
+    def create(fmt: ImageFormat, anti_forensic_noise: bool = False, noise_ratio: float = 0.05) -> ImageStegoBackend:
         if fmt == ImageFormat.PNG:
-            return PngStegoBackend()
+            return PngStegoBackend(anti_forensic_noise = anti_forensic_noise, noise_ratio = noise_ratio)
         if fmt == ImageFormat.BMP:
-            return BmpStegoBackend()
+            return BmpStegoBackend(anti_forensic_noise = anti_forensic_noise, noise_ratio = noise_ratio)
         if fmt == ImageFormat.TIFF:
-            return TiffStegoBackend()
+            return TiffStegoBackend(anti_forensic_noise = anti_forensic_noise, noise_ratio = noise_ratio)
         if fmt == ImageFormat.JPEG:
-            return JpegStegoBackend()
+            return JpegStegoBackend(anti_forensic_noise = anti_forensic_noise, noise_ratio = noise_ratio)
         raise ValueError(f"No backend for format: {fmt}")
