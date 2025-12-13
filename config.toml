@@ -2,3 +2,6 @@ title = "Config file"
 
 [DIRS]
 LOGS="logs"
+
+[PARAMS]
+HEADER_BITS = 32

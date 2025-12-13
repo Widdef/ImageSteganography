@@ -1,5 +1,6 @@
 from PIL import Image
 from typing import TYPE_CHECKING
+import random
 
 if TYPE_CHECKING:
     from PIL.Image import PixelAccess # type: ignore
@@ -12,7 +13,7 @@ class LsbMixin:
 
     HEADER_BITS = 32  # np. 32 bity na długość wiadomości w bajtach
 
-    def _image_to_pixels(self, img: Image.Image) -> tuple[Image.Image, PixelAccess]:
+    def _image_to_pixels(self, img: Image.Image) -> tuple[Image.Image, "PixelAccess"]:
         # wymuś kopię aby load() zawsze działało 
         img = img.copy()
         
@@ -26,7 +27,7 @@ class LsbMixin:
         return img, pixels
     
 
-    def _get_rgba(self, pixels: PixelAccess, x: int, y: int) -> tuple[int, int, int, int]:
+    def _get_rgba(self, pixels: "PixelAccess", x: int, y: int) -> tuple[int, int, int, int]:
         """Zwraca zawsze (r, g, b, a) niezależnie od trybu obrazu."""
         # Zapewnia zgodność typów pod Pylance
         value = pixels[x, y]
@@ -65,7 +66,16 @@ class LsbMixin:
         data = int(msg_bits, 2).to_bytes(length, byteorder="big")
         return data.decode("utf-8")
 
-    def _encode_lsb(self, input_path: str, message: str, output_path: str, fmt: str) -> str:
+    def _encode_lsb(
+            self, 
+            input_path: str, 
+            message: str, 
+            output_path: str, 
+            fmt: str, 
+            anti_forensic_noise: bool, 
+            noise_ratio: float
+    ) -> str:
+
         img = Image.open(input_path)
         img, pixels = self._image_to_pixels(img)
 
@@ -75,15 +85,19 @@ class LsbMixin:
 
         w, h = img.size
         bit_index = 0
+
         for y in range(h):
             for x in range(w):
                 if bit_index >= len(bits):
                     break
+
                 r, g, b, a = self._get_rgba(pixels, x, y)
                 channels = [r, g, b]
+
                 for i in range(3):
                     if bit_index >= len(bits):
                         break
+
                     channel = channels[i]
                     channel &= 0b11111110  # zerujemy najmłodszy bit
                     channel |= int(bits[bit_index])
@@ -94,6 +108,10 @@ class LsbMixin:
 
             if bit_index >= len(bits):
                 break
+        used_bits = len(bits)
+        # Dodanie szumu anti-forensic
+        if anti_forensic_noise:
+            self._add_lsb_noise(pixels, w, h, used_bits, noise_ratio)
 
         img.save(output_path, format=fmt)
         return output_path
@@ -145,3 +163,40 @@ class LsbMixin:
 
         all_bits = "".join(header_bits + msg_bits)
         return self._bits_to_message(all_bits)
+    
+    def _add_lsb_noise(
+        self,
+        pixels,
+        w: int,
+        h: int,
+        used_bits: int,
+        noise_ratio: float,
+    ) -> None:
+        """
+        Dodaje szum do LSB w nieużywanych pixelach.
+
+        Iterujemy w tej samej kolejności co przy kodowaniu:
+        (y, x, kanały R,G,B). Pierwsze 'used_bits' pozycji zostawiamy,
+        a dla reszty z prawdopodobieństwem 'noise_ratio' losujemy LSB.
+        """
+        bit_pos = 0
+
+        for y in range(h):
+            for x in range(w):
+                r, g, b, a = self._get_rgba(pixels, x, y)
+                channels = [r, g, b]
+
+                for i in range(3):
+                    if bit_pos < used_bits:
+                        # tu siedzi wiadomość – nic nie ruszamy
+                        bit_pos += 1
+                        continue
+
+                    # od tego miejsca to wolna pojemność – dodajemy szum
+                    if random.random() < noise_ratio:
+                        rnd_bit = random.getrandbits(1)
+                        channels[i] = (channels[i] & 0b11111110) | rnd_bit
+
+                    bit_pos += 1
+
+                pixels[x, y] = (*channels, a)
