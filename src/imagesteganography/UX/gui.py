@@ -23,7 +23,7 @@ else:
         sys.path.insert(0, src_dir)
         print(f"✅ Dodano src (alternatywnie): {src_dir}")
 
-print("\n🔄 Importowanie modułów partnera...")
+print("\n🔄 Importowanie modułów...")
 
 try:
     from imagesteganography.utilities.ImageFormat import ImageFormat
@@ -77,8 +77,8 @@ class Gui:
     def __init__(self, root):
         self.root = root
         self.root.title("Zaawansowana Steganografia Obrazów")
-        self.root.geometry("1300x960")  # <-- WIĘKSZE OKNO
-        self.root.minsize(1000, 650)    # <-- WIĘKSZE MINIMUM
+        self.root.geometry("1300x960")  # <-- Domyslny rozmiar
+        self.root.minsize(1000, 650)    # <-- 
         
         self.current_image_path = None
         self.original_image = None
@@ -86,7 +86,8 @@ class Gui:
         self.encoded_image_path = None
         self.encryption_key = tk.StringVar(value="")
         self.show_key_var = tk.BooleanVar(value=False)
-        self.add_noise_var = tk.BooleanVar(value=False)
+        self.add_noise_var = tk.BooleanVar(value=True) #Zawsze true
+        self.noise_ratio = tk.DoubleVar(value=0.05)
         self.verify_message_var = tk.BooleanVar(value=True)
         self.image_capacity = 0
         self.psnr_value = 0
@@ -121,7 +122,7 @@ class Gui:
                        foreground='white')
         
     def create_widgets(self):
-        main_container = ttk.Frame(self.root, padding="15")
+        main_container = ttk.Frame(self.root, padding="10")
         main_container.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         self.root.columnconfigure(0, weight=1)
@@ -132,63 +133,63 @@ class Gui:
         title_label = ttk.Label(main_container, 
                                text="Zaawansowana Steganografia Obrazów",
                                style='Title.TLabel')
-        title_label.grid(row=0, column=0, columnspan=3, pady=(0, 25))
+        title_label.grid(row=0, column=0, columnspan=3, pady=(0, 15))
         
-        left_panel = ttk.LabelFrame(main_container, text="Podgląd Obrazu", padding="15")
-        left_panel.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 15))
+        left_panel = ttk.LabelFrame(main_container, text="Podgląd Obrazu", padding="10")
+        left_panel.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
         left_panel.columnconfigure(0, weight=1)
         left_panel.rowconfigure(1, weight=1)
         
         img_buttons_frame = ttk.Frame(left_panel)
-        img_buttons_frame.grid(row=0, column=0, pady=(0, 15))
+        img_buttons_frame.grid(row=0, column=0, pady=(0, 10))
         
         ttk.Button(img_buttons_frame, text="📁 Wczytaj Obraz", 
-                  command=self.load_image).pack(side=tk.LEFT, padx=3)
+                  command=self.load_image).pack(side=tk.LEFT, padx=2)
         ttk.Button(img_buttons_frame, text="💾 Zapisz Obraz", 
-                  command=self.save_image).pack(side=tk.LEFT, padx=3)
+                  command=self.save_image).pack(side=tk.LEFT, padx=2)
         
-        self.image_canvas = tk.Canvas(left_panel, bg='white', width=350, height=300)
+        self.image_canvas = tk.Canvas(left_panel, bg='white', width=320, height=280)
         self.image_canvas.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        self.image_canvas.create_text(175, 150, 
+        self.image_canvas.create_text(160, 140, 
                                      text="Brak załadowanego obrazu\n\nKliknij 'Wczytaj Obraz'\naby wybrać obraz", 
-                                     fill="gray", font=("Arial", 11), justify=tk.CENTER)
+                                     fill="gray", font=("Arial", 10), justify=tk.CENTER)
         
-        self.image_info_label = ttk.Label(left_panel, text="Brak załadowanego obrazu", font=("Arial", 10))
-        self.image_info_label.grid(row=2, column=0, pady=15)
+        self.image_info_label = ttk.Label(left_panel, text="Brak załadowanego obrazu", font=("Arial", 9))
+        self.image_info_label.grid(row=2, column=0, pady=10)
         
-        center_panel = ttk.LabelFrame(main_container, text="Operacje Steganograficzne", padding="15")
+        center_panel = ttk.LabelFrame(main_container, text="Operacje Steganograficzne", padding="10")
         center_panel.grid(row=1, column=1, sticky=(tk.W, tk.E, tk.N, tk.S))
         center_panel.columnconfigure(0, weight=1)
         
         self.notebook = ttk.Notebook(center_panel)
-        self.notebook.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 15))
+        self.notebook.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 10))
         
-        encode_frame = ttk.Frame(self.notebook, padding="10")
+        encode_frame = ttk.Frame(self.notebook, padding="8")
         self.create_encode_tab(encode_frame)
         self.notebook.add(encode_frame, text="🔒 Koduj")
         
-        decode_frame = ttk.Frame(self.notebook, padding="10")
+        decode_frame = ttk.Frame(self.notebook, padding="8")
         self.create_decode_tab(decode_frame)
         self.notebook.add(decode_frame, text="🔓 Dekoduj")
         
-        analyze_frame = ttk.Frame(self.notebook, padding="10")
+        analyze_frame = ttk.Frame(self.notebook, padding="8")
         self.create_analyze_tab(analyze_frame)
         self.notebook.add(analyze_frame, text="📊 Analizuj")
         
-        right_panel = ttk.LabelFrame(main_container, text="Informacje i Ustawienia", padding="15")
-        right_panel.grid(row=1, column=2, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(15, 0))
+        right_panel = ttk.LabelFrame(main_container, text="Informacje i Ustawienia", padding="10")
+        right_panel.grid(row=1, column=2, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(10, 0))
         right_panel.columnconfigure(0, weight=1)
         
         self.create_info_panel(right_panel)
         
-        bottom_panel = ttk.LabelFrame(main_container, text="Dziennik Aktywności", padding="15")
-        bottom_panel.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(15, 0))
+        bottom_panel = ttk.LabelFrame(main_container, text="Dziennik Aktywności", padding="10")
+        bottom_panel.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(10, 0))
         bottom_panel.columnconfigure(0, weight=1)
         bottom_panel.rowconfigure(0, weight=1)
         
         self.create_log_panel(bottom_panel)
-        
+     #test   
     def create_encode_tab(self, parent):
         ttk.Label(parent, text="Wiadomość do ukrycia:", style='Header.TLabel').grid(
             row=0, column=0, sticky=tk.W, pady=(0, 10))
@@ -204,43 +205,83 @@ class Gui:
         ttk.Label(crypto_frame, text="Klucz szyfrowania:", font=("Arial", 10)).grid(
             row=0, column=0, sticky=tk.W, padx=(0, 10), pady=(0, 5))
         
+        # Frame dla pola klucza z przyciskiem pokaż/ukryj
         key_entry_frame = ttk.Frame(crypto_frame)
         key_entry_frame.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(0, 10))
         key_entry_frame.columnconfigure(1, weight=1)
         
+        # Pole klucza z opcją pokaż/ukryj
         self.encryption_key_entry = ttk.Entry(key_entry_frame, textvariable=self.encryption_key, 
                                             show="*", width=40, font=("Arial", 10))
         self.encryption_key_entry.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 10))
         key_entry_frame.columnconfigure(0, weight=1)
-
-        self.show_key_btn = ttk.Button(key_entry_frame, text="👁 Pokaż", 
-                                      command=self.toggle_key_visibility, width=8)
-        self.show_key_btn.grid(row=0, column=1, padx=(0, 10))
-
-        ttk.Button(key_entry_frame, text="🎲 Generuj Klucz", 
-                  command=self.generate_key, width=12).grid(row=0, column=2)
         
+        # Przycisk pokaż/ukryj klucz
+        self.show_key_btn = ttk.Button(key_entry_frame, text="👁 Pokaż", 
+                                    command=self.toggle_key_visibility, width=8)
+        self.show_key_btn.grid(row=0, column=1, padx=(0, 10))
+        
+        # Przycisk generuj klucz
+        ttk.Button(key_entry_frame, text="🎲 Generuj Klucz", 
+                command=self.generate_key, width=12).grid(row=0, column=2)
+        
+        # Status szyfrowania
         crypto_status = "✅ Dostępne" if self.crypto_available else "❌ Wymaga: pip install cryptography"
         ttk.Label(crypto_frame, text=f"Status: {crypto_status}", 
-                 font=("Arial", 9), foreground="green" if self.crypto_available else "red").grid(
+                font=("Arial", 9), foreground="green" if self.crypto_available else "red").grid(
             row=2, column=0, columnspan=3, sticky=tk.W, pady=(5, 0))
         
         adv_frame = ttk.LabelFrame(parent, text="Opcje Zaawansowane", padding="10")
         adv_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 15))
         
-        ttk.Checkbutton(adv_frame, text="Dodaj szum (anti-forensic)", 
-                       variable=self.add_noise_var).grid(row=0, column=0, sticky=tk.W)
+        # Etykieta dla szumu
+        ttk.Label(adv_frame, text="Szum anti-forensic:", 
+                font=("Arial", 10)).grid(row=0, column=0, sticky=tk.W, pady=(0, 10))
+        
+        # Frame dla slidera
+        self.noise_slider_frame = ttk.Frame(adv_frame)
+        self.noise_slider_frame.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(5, 0))
+        
+        # Label "Wyłączony" dla 0%
+        self.noise_off_label = ttk.Label(self.noise_slider_frame, text="Wył.", foreground="gray")
+        self.noise_off_label.grid(row=0, column=0, sticky=tk.W, padx=(0, 5))
+        
+        # Slider
+        self.noise_slider = ttk.Scale(self.noise_slider_frame, 
+                                    from_=0, to=100,
+                                    orient=tk.HORIZONTAL,
+                                    variable=self.noise_ratio,
+                                    command=self.update_noise_label,
+                                    length=180)
+        self.noise_slider.grid(row=0, column=1, sticky=(tk.W, tk.E))
+        
+        # Label "Maksymalny" dla 100%
+        self.noise_max_label = ttk.Label(self.noise_slider_frame, text="Max")
+        self.noise_max_label.grid(row=0, column=2, sticky=tk.W, padx=(5, 0))
+        
+        # Label z wartością procentową
+        self.noise_value_label = ttk.Label(adv_frame, text="Poziom: 5.0%")
+        self.noise_value_label.grid(row=2, column=0, sticky=tk.W, pady=(10, 0))
+        
+        # Opis
+        ttk.Label(adv_frame, text="0% = brak szumu, >0% = dodaje szum do wolnych bitów", 
+                font=("Arial", 9), foreground="gray").grid(row=3, column=0, sticky=tk.W, pady=(5, 0))
+        
+        # Inicjalizuj etykietę
+        self.update_noise_label()
+        
+        # Checkbox weryfikacji
         ttk.Checkbutton(adv_frame, text="Weryfikuj po zakodowaniu", 
-                       variable=self.verify_message_var).grid(row=1, column=0, sticky=tk.W)
+                    variable=self.verify_message_var).grid(row=4, column=0, sticky=tk.W, pady=(15, 0))
         
         button_frame = ttk.Frame(parent)
         button_frame.grid(row=4, column=0, columnspan=2, pady=(15, 0))
         
         ttk.Button(button_frame, text="📥 Koduj Wiadomość", 
-                  command=self.encode_message, width=20).pack(side=tk.LEFT, padx=5)
+                command=self.encode_message, width=20).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_frame, text="🗑️ Wyczyść", 
-                  command=self.clear_message, width=15).pack(side=tk.LEFT, padx=5)
-        
+                command=self.clear_message, width=15).pack(side=tk.LEFT, padx=5)  
+#test       
     def create_decode_tab(self, parent):
         ttk.Label(parent, text="Wczytaj zakodowany obraz aby odczytać wiadomość:", 
                  style='Header.TLabel').grid(row=0, column=0, sticky=tk.W, pady=(0, 15))
@@ -327,9 +368,14 @@ class Gui:
 ✅ Wiele Formatów: PNG, BMP, JPEG, TIFF
 ✅ Obliczanie Pojemności Obrazu
 ✅ Metryka Jakości PSNR
-✅ Szum Anti-Forensic
+✅ Szum Anti-Forensic (regulowany)
 ✅ Weryfikacja Wiadomości
 ✅ Testy Automatyczne
+
+Instrukcje szumowania:
+• Szum jest ZAWSZE włączony w kodzie
+• 0% na sliderze = brak szumu
+• 1-100% = dodaje szum do wolnych bitów
 
 Instrukcje szyfrowania:
 1. Wpisz wiadomość
@@ -408,7 +454,42 @@ Instrukcje szyfrowania:
         else:
             entry_widget.config(show="*")
             button_widget.config(text="👁 Pokaż")
-    
+    def toggle_noise_slider(self):
+        """Funkcja zachowana dla kompatybilności, ale już nie używana."""
+        # Slider jest zawsze aktywny, 0% = brak szumu
+        pass
+
+    def update_noise_label(self, value=None):
+        """Aktualizuje etykietę przy sliderze."""
+        ratio = self.noise_ratio.get()
+        
+        # Formatuj tekst
+        if ratio == 0:
+            text = "Poziom: Wyłączony (0%)"
+            color = "gray"
+        elif ratio < 1:
+            text = f"Poziom: {ratio:.2f}% (minimalny)"
+            color = "blue"
+        elif ratio > 50:
+            text = f"Poziom: {ratio:.1f}% (wysoki)"
+            color = "orange"
+        else:
+            text = f"Poziom: {ratio:.1f}%"
+            color = "black"
+        
+        self.noise_value_label.config(text=text, foreground=color)
+        
+        # Zmień kolor etykiet krańcowych
+        if ratio == 0:
+            self.noise_off_label.config(foreground="red", font=("Arial", 9, "bold"))
+            self.noise_max_label.config(foreground="black")
+        elif ratio == 100:
+            self.noise_off_label.config(foreground="black")
+            self.noise_max_label.config(foreground="red", font=("Arial", 9, "bold"))
+        else:
+            self.noise_off_label.config(foreground="gray")
+            self.noise_max_label.config(foreground="black")
+
     def _encrypt_message(self, message: str, password: str) -> str:
         """Szyfruje wiadomość przed wysłaniem do StegoService."""
         if not password or not self.crypto_available:
@@ -448,7 +529,11 @@ Instrukcje szyfrowania:
     
     def load_image(self):
         filetypes = [
-            ("Pliki obrazów", "*.png *.jpg *.jpeg *.bmp *.tiff *.tif"),
+            ("Pliki obrazów", "*.png *.jpg *.jpeg *.bmp *.tiff *.tif *jpeg"),
+            ("JPEG files", "*.jpg *.jpeg"),
+            ("PNG files", "*.png"),
+            ("BMP files", "*.bmp"),
+            ("TIFF files", "*.tiff *.tif"),
             ("Wszystkie pliki", "*.*")
         ]
         
@@ -520,7 +605,7 @@ Instrukcje szyfrowania:
             except Exception as e:
                 messagebox.showerror("Błąd", f"Nie można zapisać obrazu: {str(e)}")
                 self.log(f"BŁĄD zapisywania obrazu: {str(e)}")
-    
+    #p
     def encode_message(self):
         if not self.current_image_path:
             messagebox.showwarning("Ostrzeżenie", "Najpierw wczytaj obraz!")
@@ -533,6 +618,10 @@ Instrukcje szyfrowania:
         
         encryption_key = self.encryption_key.get().strip()
         
+        # Pobierz parametry szumu
+        add_noise = self.add_noise_var.get()
+        noise_ratio = self.noise_ratio.get() / 100.0  # Zamień % na ułamek
+        
         if encryption_key and self.crypto_available:
             try:
                 message_to_hide = self._encrypt_message(message, encryption_key)
@@ -540,20 +629,36 @@ Instrukcje szyfrowania:
                 encryption_status = "z szyfrowaniem AES"
             except Exception as e:
                 messagebox.showerror("Błąd szyfrowania", 
-                                   f"Nie można zaszyfrować: {e}\n"
-                                   f"Ukrywam nieszyfrowaną wiadomość.")
+                                f"Nie można zaszyfrować: {e}\n"
+                                f"Ukrywam nieszyfrowaną wiadomość.")
                 message_to_hide = message
                 encryption_status = "bez szyfrowania (błąd)"
         else:
             message_to_hide = message
             if encryption_key and not self.crypto_available:
                 messagebox.showwarning("Brak cryptography", 
-                                     "Biblioteka cryptography nie zainstalowana.\n"
-                                     "Używam prostego szyfrowania.")
+                                    "Biblioteka cryptography nie zainstalowana.\n"
+                                    "Używam prostego szyfrowania.")
                 message_to_hide = self._encrypt_message(message, encryption_key)
                 encryption_status = "z prostym szyfrowaniem"
             else:
                 encryption_status = "bez szyfrowania"
+        
+        # Sprawdź format dla JPEG
+        fmt = ImageFormat.from_path(self.current_image_path)
+        
+        # Sprawdź czy JPEG i czy jpegio jest dostępne
+        if fmt.value.lower() in ["jpeg", "jpg"]:
+            try:
+                import jpegio
+                JPEGIO_AVAILABLE = True
+            except ImportError:
+                JPEGIO_AVAILABLE = False
+                messagebox.showerror("Błąd", 
+                                    "JPEG DCT wymaga biblioteki 'jpegio'!\n\n"
+                                    "Zainstaluj: pip install jpegio\n"
+                                    "Lub użyj innego formatu (PNG, BMP, TIFF).")
+                return
         
         output_file = filedialog.asksaveasfilename(
             title="Zapisz zakodowany obraz jako",
@@ -562,6 +667,7 @@ Instrukcje szyfrowania:
                 ("BMP files", "*.bmp"),
                 ("TIFF files", "*.tiff *.tif"),
                 ("PNG files", "*.png"),
+                ("JPEG files", "*.jpg *.jpeg"),
                 ("Wszystkie pliki", "*.*")
             ]
         )
@@ -572,18 +678,32 @@ Instrukcje szyfrowania:
         try:
             fmt = ImageFormat.from_path(self.current_image_path)
             self.update_status("Kodowanie wiadomości...")
-            self.log(f"Kodowanie {encryption_status} do: {output_file}")
             
-            result_path = self.stego_service.hide_message(
-                image_path=self.current_image_path,
-                message=message_to_hide,
-                image_format=fmt,
-                output_path=output_file
+            # Logowanie z parametrami szumu
+            if add_noise:
+                self.log(f"Kodowanie z szumem ({noise_ratio:.1%}) do: {output_file}")
+            else:
+                self.log(f"Kodowanie bez szumu do: {output_file}")
+            
+            # Użyj bezpośrednio fabryki backendów z nowymi parametrami
+            from imagesteganography.utilities.StegoBackendFactory import StegoBackendFactory
+            
+            factory = StegoBackendFactory()
+            backend = factory.create(
+                fmt, 
+                anti_forensic_noise=add_noise,
+                noise_ratio=noise_ratio
             )
+            
+            # Zakoduj wiadomość
+            result_path = backend.encode(self.current_image_path, message_to_hide, output_file)
             
             self.encoded_image_path = result_path
             self.update_status("Wiadomość zakodowana pomyślnie!")
-            self.log(f"SUKCES: Wiadomość zakodowana do: {os.path.basename(result_path)}")
+            
+            # Log z informacją o szumie
+            noise_info = f" z szumem ({noise_ratio:.1%})" if add_noise else ""
+            self.log(f"SUKCES: Wiadomość zakodowana{noise_info} do: {os.path.basename(result_path)}")
             
             try:
                 self.processed_image = Image.open(result_path)
@@ -592,20 +712,45 @@ Instrukcje szyfrowania:
             except Exception as e:
                 self.log(f"Nie można wyświetlić obrazu wyjściowego: {e}")
             
-            messagebox.showinfo("Sukces", f"Wiadomość zakodowana pomyślnie!\n\n"
-                                        f"Plik: {os.path.basename(result_path)}\n"
-                                        f"Szyfrowanie: {encryption_status}")
+            # Pokaz info z parametrami
+            noise_text = f", szum: {noise_ratio:.1%}" if add_noise else ""
+            messagebox.showinfo("Sukces", 
+                            f"Wiadomość zakodowana pomyślnie!\n\n"
+                            f"Plik: {os.path.basename(result_path)}\n"
+                            f"Szyfrowanie: {encryption_status}\n"
+                            f"Format: {fmt.value.upper()}{noise_text}")
             
             if self.verify_message_var.get():
                 self.verify_after_encode(message, result_path, encryption_key)
             
             self._update_statistic("Wiadomości Zakodowane:", "+1")
-                
+                    
+        except ValueError as e:
+            if "za długa" in str(e).lower():
+                self.update_status("Wiadomość za długa!")
+                self.log(f"BŁĄD: {str(e)}")
+                messagebox.showerror("Błąd", 
+                                f"Wiadomość jest za długa dla tego obrazu!\n\n"
+                                f"Szczegóły: {str(e)}")
+            else:
+                self.update_status("Kodowanie nie powiodło się!")
+                self.log(f"BŁĄD: {str(e)}")
+                messagebox.showerror("Błąd Kodowania", f"Nie można zakodować wiadomości:\n{str(e)}")
+        except ImportError as e:
+            self.update_status("Brak wymaganej biblioteki!")
+            self.log(f"BŁĄD importu: {str(e)}")
+            if "jpegio" in str(e):
+                messagebox.showerror("Brak biblioteki", 
+                                f"JPEG wymaga biblioteki 'jpegio'!\n\n"
+                                f"Zainstaluj: pip install jpegio\n"
+                                f"Lub użyj innego formatu.")
+            else:
+                messagebox.showerror("Błąd Importu", f"Brak wymaganej biblioteki:\n{str(e)}")
         except Exception as e:
             self.update_status("Kodowanie nie powiodło się!")
             self.log(f"BŁĄD: {str(e)}")
             messagebox.showerror("Błąd Kodowania", f"Nie można zakodować wiadomości:\n{str(e)}")
-    
+    #k
     def decode_message(self):
         if not self.encoded_image_path and not self.current_image_path:
             messagebox.showwarning("Ostrzeżenie", "Najpierw wczytaj zakodowany obraz!")
