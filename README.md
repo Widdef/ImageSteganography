@@ -200,3 +200,40 @@ python -m pytest tests/
 3. Kliknij "📊 Oblicz PSNR"
 4. Porównaj oryginalny i zakodowany obraz
 5. Sprawdź czy zmiany są niedostrzegalne (PSNR > 40dB)
+
+## 📋 Wymagania na zaliczenie projektu
+Ocena 3 - Podstawowa funkcjonalność ✅
+
+  Ukrywanie tekstu w obrazie (LSB) - Implementacja w LsbMixin.py (_encode_lsb())
+
+  Odczytywanie tekstu z obrazu - Wszystkie backendy mają metodę decode()
+
+  Obsługa PNG, BMP - Backendy w png_backend.py i bmp_backend.py
+
+  CLI: encode/decode - Implementacja w cli.py
+
+  Wiadomość + długość w nagłówku - 32-bitowy nagłówek w LsbMixin.py i jpeg_backend.py
+
+  README z przykładami - Ten dokument
+
+Ocena 4 - Rozszerzone funkcje ✅
+
+  Opcjonalne szyfrowanie AES - Pełna implementacja w crypto.py + integracja w GUI
+
+  GUI (Tkinter) - Kompletny interfejs w gui.py z wszystkimi funkcjami
+
+  Obsługa JPEG (DCT) - Backend JPEG w jpeg_backend.py z użyciem biblioteki jpegio
+
+  Wyliczenie pojemności obrazu - Funkcja calculate_capacity() w GUI
+
+  Weryfikacja wiadomości - Moduł weryfikacji w verification.py + integracja w GUI
+
+Ocena 5 - Zaawansowane funkcje ✅
+
+  Wskaźnik PSNR - Obliczanie jakości obrazu w GUI (calculate_psnr())
+
+  Szum anti-forensic - Implementacja w LsbMixin.py (_add_lsb_noise()) i jpeg_backend.py
+
+  Obsługa wielu formatów - 4 formaty: PNG, BMP, TIFF, JPEG przez StegoBackendFactory.py
+
+  Testy automatyczne - Testy jednostkowe w test_verification.py + pełne testy w GUI
